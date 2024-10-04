@@ -4,6 +4,7 @@ import Main from "./components/Main";
 import Loader from "./components/Loader";
 import Error from "./components/Error";
 import StartScreen from "./components/StartScreen";
+import Question from "./components/Question";
 
 const initialState = {
   questions: [],
@@ -20,6 +21,9 @@ function reducer(state, action) {
     case "dataFailed":
       return { ...state, status: "error" };
 
+    case "start":
+      return { ...state, status: "active" };
+
     default:
       throw new Error(" Action is unknown ");
   }
@@ -27,6 +31,8 @@ function reducer(state, action) {
 
 const App = () => {
   const [{ status, questions }, dispatch] = useReducer(reducer, initialState);
+
+  const numQuestions = questions.length;
 
   useEffect(function () {
     fetch("http://localhost:8000/questions")
@@ -45,7 +51,8 @@ const App = () => {
       <Main>
         {status === "loading" && <Loader />}
         {status === "error" && <Error />}
-        {status === "ready" && <StartScreen />}
+        {status === "ready" && <StartScreen numQuestions={numQuestions} dispatch={dispatch}/>}
+        {status === "active" && <Question />}
       </Main>
     </div>
   );
